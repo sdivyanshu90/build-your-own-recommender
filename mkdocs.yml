@@ -1,0 +1,37 @@
+site_name: Two-Tower Recommender
+site_description: Production-oriented neural candidate retrieval
+theme:
+  name: material
+  features: [navigation.sections, content.code.copy]
+nav:
+  - Home: index.md
+  - Concepts: recommendation-concepts.md
+  - Two-tower theory: two-tower-theory.md
+  - Architecture: architecture.md
+  - Data pipeline: data-pipeline.md
+  - Features: feature-engineering.md
+  - Negative sampling: negative-sampling.md
+  - Training: training.md
+  - Evaluation: evaluation.md
+  - Vector search: vector-search.md
+  - Serving: serving.md
+  - Batch inference: batch-inference.md
+  - Artifacts: artifacts.md
+  - Configuration: configuration.md
+  - Observability: observability.md
+  - Monitoring: monitoring.md
+  - Security: security.md
+  - Testing: testing.md
+  - Deployment: deployment.md
+  - Operations: operations.md
+  - Troubleshooting: troubleshooting.md
+  - Limitations: limitations.md
+  - Final audit: final-audit.md
+markdown_extensions:
+  - admonition
+  - pymdownx.arithmatex
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
