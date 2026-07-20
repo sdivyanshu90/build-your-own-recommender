@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: recommender-artifacts, namespace: recommender}
+spec: {accessModes: [ReadOnlyMany], resources: {requests: {storage: 20Gi}}}
