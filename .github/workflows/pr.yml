@@ -18,7 +18,7 @@ jobs:
       - run: uv run ruff check .
       - run: uv run mypy
       - run: uv run pytest -m "not e2e and not performance" --cov --cov-branch --cov-report=xml --junitxml=test-results.xml
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with: {name: test-evidence, path: "test-results.xml\ncoverage.xml"}
   docs:
