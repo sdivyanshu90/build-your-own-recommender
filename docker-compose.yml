@@ -1,0 +1,49 @@
+services:
+  api:
+    build: .
+    image: two-tower-recommender:local
+    ports: ["8000:8000"]
+    command: [serve, --config, /app/configs/demo.yaml]
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+      - ./data:/app/data:ro
+      - ./reports:/app/reports
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.1.1
+    profiles: [observability]
+    command: [mlflow, server, --host, 0.0.0.0, --port, "5000", --backend-store-uri, sqlite:////mlflow/mlflow.db, --default-artifact-root, /mlflow/artifacts]
+    volumes: [mlflow:/mlflow]
+    ports: ["5000:5000"]
+  redis:
+    image: redis:8.0.3-alpine
+    profiles: [stateful]
+    command: [redis-server, --save, "", --appendonly, "no"]
+    ports: ["6379:6379"]
+  postgres:
+    image: postgres:17.5-alpine
+    profiles: [stateful]
+    environment:
+      POSTGRES_USER: recommender
+      POSTGRES_PASSWORD: local-only-change-me
+      POSTGRES_DB: recommender
+    volumes: [postgres:/var/lib/postgresql/data]
+  prometheus:
+    image: prom/prometheus:v3.4.1
+    profiles: [observability]
+    command: [--config.file=/etc/prometheus/prometheus.yml]
+    volumes: [./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro]
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana:12.0.2
+    profiles: [observability]
+    environment: {GF_SECURITY_ADMIN_PASSWORD: local-only-change-me}
+    volumes: [./deploy/grafana/provisioning:/etc/grafana/provisioning:ro]
+    ports: ["3000:3000"]
+volumes:
+  mlflow: {}
+  postgres: {}
