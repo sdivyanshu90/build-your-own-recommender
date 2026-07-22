@@ -1,10 +1,24 @@
 """Deterministic shared test fixtures."""
 
+import os
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from recommender.config.models import AppConfig
+
+
+def pytest_runtest_logreport(report: Any) -> None:
+    """Publish actionable GitHub annotations without a third-party reporting action."""
+    if os.getenv("GITHUB_ACTIONS") != "true" or not report.failed:
+        return
+    path, line, test_name = report.location
+    details = str(report.longrepr).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+    print(
+        f"::error file={path},line={line + 1},title=pytest failure: {test_name}::{details}",
+        flush=True,
+    )
 
 
 @pytest.fixture
