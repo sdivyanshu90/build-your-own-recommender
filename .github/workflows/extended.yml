@@ -3,21 +3,24 @@ on:
   schedule: [{cron: "17 2 * * 1"}]
   workflow_dispatch:
 permissions: {contents: read}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   e2e-security:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-        with: {version: "0.8.3", enable-cache: true}
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with: {version: "0.9.30", enable-cache: true}
+      - uses: actions/setup-python@v7
         with: {python-version: "3.12"}
       - run: uv sync --frozen --all-extras
       - run: uv run pytest -m "e2e or integration or security" --junitxml=extended-results.xml
       - run: uv run bandit -c pyproject.toml -r src
       - run: uv run pip-audit
       - run: uv run detect-secrets scan --baseline .secrets.baseline
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with: {name: extended-results, path: extended-results.xml}
