@@ -9,7 +9,7 @@ COPY src ./src
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-editable --extra ann
 
-FROM python:3.12.11-slim-bookworm AS runtime
+FROM python:3.14.6-slim-bookworm AS runtime
 ENV PATH=/app/.venv/bin:$PATH \
     PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
     RECOMMENDER__ENVIRONMENT=production \
