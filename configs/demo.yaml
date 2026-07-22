@@ -1,0 +1,56 @@
+environment: development
+seed: 1729
+paths:
+  data_dir: data
+  artifact_dir: artifacts
+  report_dir: reports
+data:
+  num_users: 160
+  num_items: 260
+  num_events: 5000
+  invalid_fraction: 0.01
+  duplicate_fraction: 0.01
+  train_fraction: 0.7
+  validation_fraction: 0.15
+  positive_events: [click, view, add_to_cart, purchase, rating]
+  positive_weight_threshold: 1.0
+features:
+  min_frequency: 1
+  max_history: 20
+model:
+  embedding_dim: 32
+  id_embedding_dim: 16
+  categorical_embedding_dim: 8
+  hidden_dims: [64, 32]
+  dropout: 0.1
+  similarity: cosine
+  temperature: 0.08
+training:
+  epochs: 3
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  patience: 2
+  gradient_clip_norm: 5.0
+  num_workers: 0
+  deterministic: true
+evaluation:
+  ks: [5, 10, 20]
+  bootstrap_samples: 50
+index:
+  backend: exact
+  metric: cosine
+  search_candidates: 100
+serving:
+  host: 0.0.0.0
+  port: 8000
+  max_k: 100
+  default_k: 10
+  max_batch_size: 100
+  request_timeout_seconds: 2.0
+  debug: false
+  cors_origins: []
+tracking:
+  enabled: false
+  uri: sqlite:///./artifacts/mlflow.db
+  experiment: two-tower-demo
