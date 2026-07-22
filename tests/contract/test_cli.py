@@ -1,5 +1,6 @@
 """CLI command-surface and failure-contract tests."""
 
+from click import unstyle
 from typer.testing import CliRunner
 
 from recommender.cli import app
@@ -25,15 +26,16 @@ COMMANDS = (
 
 
 def test_all_documented_commands_have_help() -> None:
-    root = runner.invoke(app, ["--help"])
+    root = runner.invoke(app, ["--help"], color=False)
     assert root.exit_code == 0
     for command in COMMANDS:
-        result = runner.invoke(app, [command, "--help"])
+        result = runner.invoke(app, [command, "--help"], color=False)
         assert result.exit_code == 0, f"{command}: {result.output}"
 
 
 def test_missing_config_has_nonzero_actionable_failure() -> None:
-    result = runner.invoke(app, ["train", "--config", "does-not-exist.yaml"])
+    result = runner.invoke(app, ["train", "--config", "does-not-exist.yaml"], color=False)
+    output = unstyle(result.output)
     assert result.exit_code != 0
-    assert "Invalid value for '--config'" in result.output
-    assert "does-not-exist.yaml" in result.output
+    assert "Invalid value for '--config'" in output
+    assert "does-not-exist.yaml" in output
