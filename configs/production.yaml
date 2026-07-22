@@ -1,0 +1,11 @@
+environment: production
+seed: 1729
+paths: {data_dir: /var/lib/recommender/data, artifact_dir: /var/lib/recommender/artifacts, report_dir: /var/lib/recommender/reports}
+data: {num_users: 10000, num_items: 50000, num_events: 1000000, invalid_fraction: 0.0, duplicate_fraction: 0.0, train_fraction: 0.8, validation_fraction: 0.1, positive_events: [click, view, add_to_cart, purchase, rating], positive_weight_threshold: 1.0}
+features: {min_frequency: 2, max_history: 50}
+model: {embedding_dim: 128, id_embedding_dim: 64, categorical_embedding_dim: 16, hidden_dims: [256, 128], dropout: 0.1, similarity: cosine, temperature: 0.07}
+training: {epochs: 20, batch_size: 1024, learning_rate: 0.001, weight_decay: 0.00001, patience: 3, gradient_clip_norm: 5.0, num_workers: 4, deterministic: false}
+evaluation: {ks: [10, 50, 100], bootstrap_samples: 1000}
+index: {backend: faiss, metric: cosine, search_candidates: 500}
+serving: {host: 0.0.0.0, port: 8000, max_k: 100, default_k: 20, max_batch_size: 100, request_timeout_seconds: 0.5, debug: false, cors_origins: []}
+tracking: {enabled: true, uri: http://mlflow:5000, experiment: two-tower-production}
