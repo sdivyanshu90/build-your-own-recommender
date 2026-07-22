@@ -1,0 +1,9 @@
+name: Deployment template
+on: {workflow_dispatch: {inputs: {image_digest: {description: "Previously signed image digest", required: true, type: string}}}}
+permissions: {contents: read, id-token: write}
+jobs:
+  instructions-only:
+    runs-on: ubuntu-24.04
+    environment: production
+    steps:
+      - run: echo "Configure cloud workload identity and replace this step with the organization deployment action for ${{ inputs.image_digest }}"
