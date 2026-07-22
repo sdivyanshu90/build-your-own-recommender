@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: recommender-api
+  namespace: recommender
+  annotations: {nginx.ingress.kubernetes.io/proxy-body-size: 1m}
+spec:
+  tls: [{hosts: [recommender.example.com], secretName: recommender-tls}]
+  rules:
+    - host: recommender.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: recommender-api, port: {name: http}}}
