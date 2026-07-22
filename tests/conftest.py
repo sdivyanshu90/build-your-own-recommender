@@ -8,17 +8,34 @@ import pytest
 
 from recommender.config.models import AppConfig
 
+FAILED_REPORTS: list[Any] = []
+
 
 def pytest_runtest_logreport(report: Any) -> None:
-    """Publish actionable GitHub annotations without a third-party reporting action."""
-    if os.getenv("GITHUB_ACTIONS") != "true" or not report.failed:
+    """Retain failed reports until pytest has suspended output capture."""
+    if report.failed:
+        FAILED_REPORTS.append(report)
+
+
+def pytest_terminal_summary(
+    terminalreporter: Any,
+    exitstatus: int,
+    config: Any,
+) -> None:
+    """Publish actionable first-party GitHub annotations after capture is suspended."""
+    if os.getenv("GITHUB_ACTIONS") != "true":
         return
-    path, line, test_name = report.location
-    details = str(report.longrepr).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-    print(
-        f"::error file={path},line={line + 1},title=pytest failure: {test_name}::{details}",
-        flush=True,
-    )
+    for report in FAILED_REPORTS:
+        path, line, test_name = report.location
+        details = str(report.longrepr).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        terminalreporter.write_line(
+            f"::error file={path},line={line + 1},title=pytest failure: {test_name}::{details}"
+        )
+    if exitstatus and not FAILED_REPORTS:
+        terminalreporter.write_line(
+            f"::error title=pytest session failure::pytest exited with status {exitstatus} "
+            "without an individual failed test report"
+        )
 
 
 @pytest.fixture
